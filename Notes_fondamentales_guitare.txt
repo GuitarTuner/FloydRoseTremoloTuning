@@ -1,0 +1,7 @@
+f(Hz)	Note
+82.4	str(mi(grave))
+110	'la'
+146.8	're'
+196	'sol'
+246.9	'si'
+329.5	'mi(aigu)'
