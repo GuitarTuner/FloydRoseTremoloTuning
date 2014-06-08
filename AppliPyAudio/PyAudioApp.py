@@ -13,16 +13,16 @@ import os
 import numpy as np
 import scipy.io.wavfile as wavfile
 from scipy import fft
-import pyaudio
+#import PyAudio
 import wave
 
 from pylab import diff, sign, arange
 
-CHUNK = 1024
-FORMAT = pyaudio.paInt16
-CHANNELS = 2
-RATE = 44100
-WAVE_OUTPUT_FILENAME = "output.wav"
+#CHUNK = 1024
+#FORMAT = pyaudio.paInt16
+#CHANNELS = 2
+#RATE = 44100
+#WAVE_OUTPUT_FILENAME = "output.wav"
 
 class MplFigure(object):
     def __init__(self, parent):
@@ -59,7 +59,7 @@ class MainWindow(QtGui.QMainWindow):
         
     def connectSlots(self):
         # button for recording
-        self.ui.pushButton_2.clicked.connect(self.recordSound)
+        #self.ui.pushButton_2.clicked.connect(self.recordSound)
         # button for analyzing current data
         self.ui.pushButton.clicked.connect(self.analyzeSound)
 
@@ -93,71 +93,71 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.main_figure.canvas.draw()
         
         
-    def recordSound(self):
-        """ records a sound
-        code is taken from http://people.csail.mit.edu/hubert/pyaudio/
-        """
-        RECORD_SECONDS = self.ui.spinBox_2.value()        
-        
-        p = pyaudio.PyAudio()
-
-        stream = p.open(format=FORMAT,
-                        channels=CHANNELS,
-                        rate=RATE,
-                        input=True,
-                        frames_per_buffer=CHUNK)
-        
-        print("* recording")
-        
-        frames = []
-        
-        for i in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
-            data = stream.read(CHUNK)
-            frames.append(data)
-        
-        print("* done recording")
-        
-        stream.stop_stream()
-        stream.close()
-        p.terminate()
-        
-
-        wf = wave.open(WAVE_OUTPUT_FILENAME, 'wb')
-        wf.setnchannels(CHANNELS)
-        wf.setsampwidth(p.get_sample_size(FORMAT))
-        wf.setframerate(RATE)
-        wf.writeframes(b''.join(frames))
-        wf.close()
-    
-        (sample_freq, data) = wavfile.read(WAVE_OUTPUT_FILENAME)
-        
-        # temps
-        plt.figure(self.main_figure.figure.number)
-        plt.clf()
-        ax = self.main_figure.figure.add_subplot(211)
-        ax.plot(arange(data[:, 0].shape[0]) / float(sample_freq), data[:, 0], label='channel 1')
-        ax.plot(arange(data[:, 1].shape[0]) / float(sample_freq), data[:, 1], label='channel 2')
-        ax.set_ylim(-32768, 32768)
-        ax.legend()
-        ax.set_xlabel(u'temps (s)')
-        
-        # fréquence
-        ax = self.main_figure.figure.add_subplot(212)
-        from scipy.fftpack import fftfreq
-        freq_vect = fftfreq(data[:, 0].size) * sample_freq
-        ax.plot(freq_vect, abs(fft(data[:, 0])), label='channel 1')
-        ax.plot(freq_vect, abs(fft(data[:, 1])), label='channel 2')
-        ax.set_xlim(0, sample_freq/2.)
-        ax.legend()
-        ax.set_xlabel(u'fréquence (Hz)')
-        
-        # mise à jour du graphique        
-        plt.tight_layout()
-        self.ui.main_figure.canvas.draw()
-        
-        # on garde les données
-        self.sample_freq = sample_freq
-        self.data = data
+#    def recordSound(self):
+#        """ records a sound
+#        code is taken from http://people.csail.mit.edu/hubert/pyaudio/
+#        """
+#        RECORD_SECONDS = self.ui.spinBox_2.value()        
+#        
+#        p = pyaudio.PyAudio()
+#
+#        stream = p.open(format=FORMAT,
+#                        channels=CHANNELS,
+#                        rate=RATE,
+#                        input=True,
+#                        frames_per_buffer=CHUNK)
+#        
+#        print("* recording")
+#        
+#        frames = []
+#        
+#        for i in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
+#            data = stream.read(CHUNK)
+#            frames.append(data)
+#        
+#        print("* done recording")
+#        
+#        stream.stop_stream()
+#        stream.close()
+#        p.terminate()
+#        
+#
+#        wf = wave.open(WAVE_OUTPUT_FILENAME, 'wb')
+#        wf.setnchannels(CHANNELS)
+#        wf.setsampwidth(p.get_sample_size(FORMAT))
+#        wf.setframerate(RATE)
+#        wf.writeframes(b''.join(frames))
+#        wf.close()
+#    
+#        (sample_freq, data) = wavfile.read(WAVE_OUTPUT_FILENAME)
+#        
+#        # temps
+#        plt.figure(self.main_figure.figure.number)
+#        plt.clf()
+#        ax = self.main_figure.figure.add_subplot(211)
+#        ax.plot(arange(data[:, 0].shape[0]) / float(sample_freq), data[:, 0], label='channel 1')
+#        ax.plot(arange(data[:, 1].shape[0]) / float(sample_freq), data[:, 1], label='channel 2')
+#        ax.set_ylim(-32768, 32768)
+#        ax.legend()
+#        ax.set_xlabel(u'temps (s)')
+#        
+#        # fréquence
+#        ax = self.main_figure.figure.add_subplot(212)
+#        from scipy.fftpack import fftfreq
+#        freq_vect = fftfreq(data[:, 0].size) * sample_freq
+#        ax.plot(freq_vect, abs(fft(data[:, 0])), label='channel 1')
+#        ax.plot(freq_vect, abs(fft(data[:, 1])), label='channel 2')
+#        ax.set_xlim(0, sample_freq/2.)
+#        ax.legend()
+#        ax.set_xlabel(u'fréquence (Hz)')
+#        
+#        # mise à jour du graphique        
+#        plt.tight_layout()
+#        self.ui.main_figure.canvas.draw()
+#        
+#        # on garde les données
+#        self.sample_freq = sample_freq
+#        self.data = data
     
                                         
 if __name__ == "__main__":
