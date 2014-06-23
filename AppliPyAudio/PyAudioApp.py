@@ -20,7 +20,7 @@ from pylab import diff, sign, arange
 
 CHUNK = 1024
 FORMAT = pyaudio.paInt16
-CHANNELS = 2
+CHANNELS = 1
 RATE = 44100
 WAVE_OUTPUT_FILENAME = "output.wav"
 
@@ -70,25 +70,25 @@ class MainWindow(QtGui.QMainWindow):
         data = self.data
         sample_freq = self.sample_freq
         from scipy.fftpack import fftfreq
-        freq_vect = fftfreq(data[:, 0].size) * sample_freq
+        freq_vect = fftfreq(data.size) * sample_freq
         
         # on trouve les maxima
-        y0 = abs(fft(data[:, 0]))
-        y1 = abs(fft(data[:, 1]))
+        y0 = abs(fft(data))
+#        y1 = abs(fft(data[:, 1]))
         maxi0 = ((diff(sign(diff(y0))) < 0) & (y0[1:-1] > y0.max()/10.)).nonzero()[0] + 1 # local max
-        maxi1 = ((diff(sign(diff(y1))) < 0) & (y1[1:-1] > y1.max()/10.)).nonzero()[0] + 1 # local max
+        # maxi1 = ((diff(sign(diff(y1))) < 0) & (y1[1:-1] > y1.max()/10.)).nonzero()[0] + 1 # local max
         
         # fréquence
         ax = self.main_figure.figure.add_subplot(212)
         ax.plot(freq_vect[maxi0], y0[maxi0], "o")
-        ax.plot(freq_vect[maxi1], y1[maxi1], "o")
+        # ax.plot(freq_vect[maxi1], y1[maxi1], "o")
         
         # annotations au dessus d'une fréquence de coupure
         fc = 100
         for point in maxi0[(freq_vect[maxi0] > fc).nonzero()][:self.ui.spinBox.value()]:
             plt.annotate("%.2f" % freq_vect[point], (freq_vect[point], y0[point]))
-        for point in maxi1[(freq_vect[maxi0] > fc).nonzero()][:self.ui.spinBox.value()]:
-            plt.annotate("%.2f" % freq_vect[point], (freq_vect[point], y1[point]))
+#        for point in maxi1[(freq_vect[maxi0] > fc).nonzero()][:self.ui.spinBox.value()]:
+#            plt.annotate("%.2f" % freq_vect[point], (freq_vect[point], y1[point]))
         
         self.ui.main_figure.canvas.draw()
         
@@ -135,8 +135,8 @@ class MainWindow(QtGui.QMainWindow):
         plt.figure(self.main_figure.figure.number)
         plt.clf()
         ax = self.main_figure.figure.add_subplot(211)
-        ax.plot(arange(data[:, 0].shape[0]) / float(sample_freq), data[:, 0], label='channel 1')
-        ax.plot(arange(data[:, 1].shape[0]) / float(sample_freq), data[:, 1], label='channel 2')
+        ax.plot(arange(data.shape[0]) / float(sample_freq), data, label='channel 1')
+        # ax.plot(arange(data.shape[0]) / float(sample_freq), data, label='channel 2')
         ax.set_ylim(-32768, 32768)
         ax.legend()
         ax.set_xlabel(u'temps (s)')
@@ -144,9 +144,9 @@ class MainWindow(QtGui.QMainWindow):
         # fréquence
         ax = self.main_figure.figure.add_subplot(212)
         from scipy.fftpack import fftfreq
-        freq_vect = fftfreq(data[:, 0].size) * sample_freq
-        ax.plot(freq_vect, abs(fft(data[:, 0])), label='channel 1')
-        ax.plot(freq_vect, abs(fft(data[:, 1])), label='channel 2')
+        freq_vect = fftfreq(data.size) * sample_freq
+        ax.plot(freq_vect, abs(fft(data)), label='channel 1')
+        # ax.plot(freq_vect, abs(fft(data[:, 1])), label='channel 2')
         ax.set_xlim(0, sample_freq/2.)
         ax.legend()
         ax.set_xlabel(u'fréquence (Hz)')
